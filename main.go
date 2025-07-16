@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -10,6 +11,11 @@ func main() {
 	router := gin.Default()
   	
 	router.GET("/ping", ping)
+  	router.GET("/students", getStudents)
+	router.POST("/students", createStudent)
+	router.GET("/students/:id", getStudent)
+	router.PUT("/students/:id", updateStudent)
+	router.DELETE("/students/:id", deleteStudent)
 
   	router.Run() //listen and serve on localhost:8080
 }
@@ -19,4 +25,32 @@ func ping(c *gin.Context ) {
 	"message": "pong",
 	})
 }
+
+func getStudents(c *gin.Context) {
+	c.String(http.StatusOK, "List of all students")
+}
+
+func createStudent(c *gin.Context) {
+	c.String(http.StatusOK, "Create student")
+}
+
+func getStudent(c *gin.Context) {
+	id := c.Param("id")
+	printStr := fmt.Sprintf("Get %s user", id)
+	c.String(http.StatusOK, printStr)
+}
+
+func updateStudent(c *gin.Context) {
+	id := c.Param("id")
+	printStr := fmt.Sprintf("Update %s user", id)
+	c.String(http.StatusOK, printStr)
+}
+
+func deleteStudent(c *gin.Context) {
+	id := c.Param("id")
+	printStr := fmt.Sprintf("Delete %s user", id)
+	c.String(http.StatusOK, printStr)
+}
+
+
 
