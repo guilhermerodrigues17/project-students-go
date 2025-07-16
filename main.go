@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/guilhermerodrigues17/project-students-go/db"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -31,7 +33,13 @@ func getStudents(c *gin.Context) {
 }
 
 func createStudent(c *gin.Context) {
-	c.String(http.StatusOK, "Create student")
+	student := db.Student{}
+	if err := c.Bind(&student); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	db.AddStudent(student)
+	c.JSON(http.StatusCreated, "Create student")
 }
 
 func getStudent(c *gin.Context) {

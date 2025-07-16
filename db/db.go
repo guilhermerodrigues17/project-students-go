@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"log"
 
 	"gorm.io/driver/postgres"
@@ -26,4 +27,15 @@ func Init() *gorm.DB {
 	db.AutoMigrate(Student{})
 
 	return db
+}
+
+
+func AddStudent(student Student) {
+	db := Init()
+
+	if result := db.Create(&student); result.Error != nil {
+		log.Fatalln("Error to create student")
+	}
+
+	fmt.Println("Create student!")
 }
