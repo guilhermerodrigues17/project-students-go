@@ -6,21 +6,21 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/guilhermerodrigues17/project-students-go/db"
-	"gorm.io/gorm"
 )
 
 type Api struct {
 	Gin *gin.Engine
-	Db *gorm.DB
+	Db *db.StudentHandler
 }
 
 func NewServer() *Api {
 	server := gin.Default()
-	db := db.Init()
+	database := db.Init()
+	studentDb := db.CreateStudentHandler(database)
 
 	return &Api{
 		Gin: server,
-		Db: db,
+		Db: studentDb,
 	}
 }
 
@@ -48,7 +48,7 @@ func ping(c *gin.Context ) {
 }
 
 func (api *Api) getStudents(c *gin.Context) {
-	students, err := db.GetStudents()
+	students, err := api.Db.GetStudents()
 	if err != nil {
 		c.String(http.StatusNotFound, "Failed to get students...")
 	}
@@ -64,7 +64,7 @@ func (api *Api) createStudent(c *gin.Context) {
 		return
 	}
 
-	if err := db.AddStudent(student); err != nil {
+	if err := api.Db.AddStudent(student); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})		
 	}
 	
