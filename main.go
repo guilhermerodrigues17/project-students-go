@@ -34,11 +34,16 @@ func getStudents(c *gin.Context) {
 
 func createStudent(c *gin.Context) {
 	student := db.Student{}
+	
 	if err := c.Bind(&student); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	db.AddStudent(student)
+
+	if err := db.AddStudent(student); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})		
+	}
+	
 	c.JSON(http.StatusCreated, "Create student")
 }
 
