@@ -1,11 +1,14 @@
 package api
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/guilhermerodrigues17/project-students-go/db"
+	"gorm.io/gorm"
 )
 
 func ping(c *gin.Context ) {
@@ -39,9 +42,24 @@ func (api *Api) createStudent(c *gin.Context) {
 }
 
 func (api *Api) getStudent(c *gin.Context) {
-	id := c.Param("id")
-	printStr := fmt.Sprintf("Get %s user", id)
-	c.String(http.StatusOK, printStr)
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.String(http.StatusInternalServerError, "An error occurred...")
+		return
+	}
+
+	student, err  := api.Db.GetStudent(id)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		c.String(http.StatusNotFound, "Student not found")
+		return
+	}
+
+	if err != nil {
+		c.String(http.StatusInternalServerError, "An error occurred...")
+		return
+	}
+
+	c.JSON(http.StatusOK, student)
 }
 
 func (api *Api) updateStudent(c *gin.Context) {
