@@ -1,69 +1,20 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
+	"log"
 
-	"github.com/guilhermerodrigues17/project-students-go/db"
-
-	"github.com/gin-gonic/gin"
+	"github.com/guilhermerodrigues17/project-students-go/api"
 )
 
 func main() {
-	router := gin.Default()
-  	
-	router.GET("/ping", ping)
-  	router.GET("/students", getStudents)
-	router.POST("/students", createStudent)
-	router.GET("/students/:id", getStudent)
-	router.PUT("/students/:id", updateStudent)
-	router.DELETE("/students/:id", deleteStudent)
+	//New instance of Gin engine
+	server := api.NewServer()
 
-  	router.Run() //listen and serve on localhost:8080
-}
+	//Configure endpoints
+	server.ConfigureRoutes()
 
-func ping(c *gin.Context ) {
-	c.JSON(http.StatusOK, gin.H{
-	"message": "pong",
-	})
-}
-
-func getStudents(c *gin.Context) {
-	c.String(http.StatusOK, "List of all students")
-}
-
-func createStudent(c *gin.Context) {
-	student := db.Student{}
-	
-	if err := c.Bind(&student); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+	//Listen and serve on localhost:8080 by default
+	if err := server.Start(); err != nil {
+		log.Fatal(err)
 	}
-
-	if err := db.AddStudent(student); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})		
-	}
-	
-	c.JSON(http.StatusCreated, "Create student")
 }
-
-func getStudent(c *gin.Context) {
-	id := c.Param("id")
-	printStr := fmt.Sprintf("Get %s user", id)
-	c.String(http.StatusOK, printStr)
-}
-
-func updateStudent(c *gin.Context) {
-	id := c.Param("id")
-	printStr := fmt.Sprintf("Update %s user", id)
-	c.String(http.StatusOK, printStr)
-}
-
-func deleteStudent(c *gin.Context) {
-	id := c.Param("id")
-	printStr := fmt.Sprintf("Delete %s user", id)
-	c.String(http.StatusOK, printStr)
-}
-
-
-
