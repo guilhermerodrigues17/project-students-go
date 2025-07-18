@@ -4,21 +4,13 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/guilhermerodrigues17/project-students-go/schemas"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 type StudentHandler struct{
 	Db *gorm.DB
-}
-
-type Student struct {
-	gorm.Model
-	Name string `json:"name"`
-	Cpf string `json:"cpf"`
-	Email string `json:"email"`
-	Age int `json:"age"`
-	Active *bool `json:"active"`
 }
 
 func Init() *gorm.DB {
@@ -28,7 +20,7 @@ func Init() *gorm.DB {
 		log.Fatalln(err)
 	}
 
-	db.AutoMigrate(Student{})
+	db.AutoMigrate(schemas.Student{})
 
 	return db
 }
@@ -38,7 +30,7 @@ func CreateStudentHandler(db *gorm.DB) *StudentHandler {
 }
 
 
-func (s *StudentHandler) AddStudent(student Student) error {
+func (s *StudentHandler) AddStudent(student schemas.Student) error {
 	if result := s.Db.Create(&student); result.Error != nil {
 		return result.Error
 	}
@@ -47,24 +39,24 @@ func (s *StudentHandler) AddStudent(student Student) error {
 	return nil
 }
 
-func (s *StudentHandler) GetStudents() ([]Student, error) {
-	students := []Student{}
+func (s *StudentHandler) GetStudents() ([]schemas.Student, error) {
+	students := []schemas.Student{}
 
 	err := s.Db.Find(&students).Error
 	return students, err
 }
 
-func (s *StudentHandler) GetStudent(id int) (Student, error) {
-	student := Student{}
+func (s *StudentHandler) GetStudent(id int) (schemas.Student, error) {
+	student := schemas.Student{}
 
 	err := s.Db.First(&student, id).Error
 	return student, err	
 }
 
-func (s *StudentHandler) UpdateStudent(updatedStudent Student) error {
+func (s *StudentHandler) UpdateStudent(updatedStudent schemas.Student) error {
 	return s.Db.Save(&updatedStudent).Error
 }
 
-func (s *StudentHandler) DeleteStudent(student Student) error {
+func (s *StudentHandler) DeleteStudent(student schemas.Student) error {
 	return s.Db.Delete(&student).Error
 }

@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/guilhermerodrigues17/project-students-go/db"
+	"github.com/guilhermerodrigues17/project-students-go/schemas"
 	"gorm.io/gorm"
 )
 
@@ -26,7 +26,7 @@ func (api *Api) getStudents(c *gin.Context) {
 }
 
 func (api *Api) createStudent(c *gin.Context) {
-	student := db.Student{}
+	student := schemas.Student{}
 	
 	if err := c.Bind(&student); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -74,7 +74,7 @@ func (api *Api) updateStudent(c *gin.Context) {
 		return
 	}
 
-	receivedStudent := db.Student{}
+	receivedStudent := schemas.Student{}
 	if err := c.Bind(&receivedStudent); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -111,7 +111,7 @@ func (api *Api) deleteStudent(c *gin.Context) {
 	c.JSON(http.StatusOK, student)
 }
 
-func verifyUpdateFields(receivedStudent, updatingStudent db.Student) db.Student {
+func verifyUpdateFields(receivedStudent, updatingStudent schemas.Student) schemas.Student {
 
 	if receivedStudent.Name != "" {
 		updatingStudent.Name = receivedStudent.Name
