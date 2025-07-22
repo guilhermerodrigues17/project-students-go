@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type StudentHandler struct{
+type StudentHandler struct {
 	Db *gorm.DB
 }
 
@@ -29,7 +29,6 @@ func CreateStudentHandler(db *gorm.DB) *StudentHandler {
 	return &StudentHandler{Db: db}
 }
 
-
 func (s *StudentHandler) AddStudent(student schemas.Student) error {
 	if result := s.Db.Create(&student); result.Error != nil {
 		return result.Error
@@ -46,11 +45,18 @@ func (s *StudentHandler) GetStudents() ([]schemas.Student, error) {
 	return students, err
 }
 
+func (s *StudentHandler) GetStudentsByActive(active bool) ([]schemas.Student, error) {
+	filteredStudents := []schemas.Student{}
+
+	err := s.Db.Where("active=?", active).Find(&filteredStudents).Error
+	return filteredStudents, err
+}
+
 func (s *StudentHandler) GetStudent(id int) (schemas.Student, error) {
 	student := schemas.Student{}
 
 	err := s.Db.First(&student, id).Error
-	return student, err	
+	return student, err
 }
 
 func (s *StudentHandler) UpdateStudent(updatedStudent schemas.Student) error {

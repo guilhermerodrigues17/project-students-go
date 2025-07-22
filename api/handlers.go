@@ -23,6 +23,22 @@ func (api *Api) getStudents(c *gin.Context) {
 		c.String(http.StatusNotFound, "Failed to get students...")
 	}
 
+	activeParam := c.Query("active")
+	if activeParam != "" {
+		active, err := strconv.ParseBool(activeParam)
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		students, err = api.Db.GetStudentsByActive(active)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+	}
+
 	listOfStudents := map[string][]schemas.StudentResponse{"students": schemas.FormatedResponse(students)}
 
 	c.JSON(http.StatusOK, listOfStudents)
