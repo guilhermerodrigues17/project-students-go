@@ -1,4 +1,26 @@
+basePath: /
+host: localhost:8080
 info:
   contact: {}
-paths: {}
+  description: Esta é uma API de Students com Gin + Swagger
+  title: Students API
+  version: "1.0"
+paths:
+  /ping:
+    get:
+      consumes:
+      - application/json
+      description: Faz uma requisição ping
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: ping example
+      tags:
+      - example
 swagger: "2.0"

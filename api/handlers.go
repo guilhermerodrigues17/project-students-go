@@ -11,6 +11,17 @@ import (
 	"gorm.io/gorm"
 )
 
+// @BasePath /api/v1
+
+// PingExample godoc
+// @Summary ping example
+// @Schemes
+// @Description Faz uma requisição ping
+// @Tags example
+// @Accept json
+// @Produce json
+// @Success 200 {object} map[string]string
+// @Router /ping [get]
 func ping(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "pong",
