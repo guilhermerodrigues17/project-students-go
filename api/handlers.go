@@ -2,6 +2,7 @@ package api
 
 import (
 	"errors"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -10,9 +11,9 @@ import (
 	"gorm.io/gorm"
 )
 
-func ping(c *gin.Context ) {
+func ping(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
-	"message": "pong",
+		"message": "pong",
 	})
 }
 
@@ -26,17 +27,31 @@ func (api *Api) getStudents(c *gin.Context) {
 }
 
 func (api *Api) createStudent(c *gin.Context) {
-	student := schemas.Student{}
-	
-	if err := c.Bind(&student); err != nil {
+	studentReq := StudentRequest{}
+
+	if err := c.Bind(&studentReq); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := api.Db.AddStudent(student); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})		
+	if err := studentReq.Validate(); err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
-	
+
+	student := schemas.Student{
+		Name:   studentReq.Name,
+		Cpf:    studentReq.Cpf,
+		Email:  studentReq.Email,
+		Age:    studentReq.Age,
+		Active: studentReq.Active,
+	}
+
+	if err := api.Db.AddStudent(student); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+
 	c.JSON(http.StatusCreated, "Create student")
 }
 
@@ -47,7 +62,7 @@ func (api *Api) getStudent(c *gin.Context) {
 		return
 	}
 
-	student, err  := api.Db.GetStudent(id)
+	student, err := api.Db.GetStudent(id)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		c.String(http.StatusNotFound, "Student not found")
 		return
@@ -68,7 +83,7 @@ func (api *Api) updateStudent(c *gin.Context) {
 		return
 	}
 
-	updatingStudent, err  := api.Db.GetStudent(id)
+	updatingStudent, err := api.Db.GetStudent(id)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		c.String(http.StatusNotFound, "Student not found")
 		return
@@ -97,7 +112,7 @@ func (api *Api) deleteStudent(c *gin.Context) {
 		return
 	}
 
-	student, err  := api.Db.GetStudent(id)
+	student, err := api.Db.GetStudent(id)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		c.String(http.StatusNotFound, "Student not found")
 		return
