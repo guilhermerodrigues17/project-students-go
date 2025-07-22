@@ -3,11 +3,13 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/guilhermerodrigues17/project-students-go/db"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type Api struct {
 	Gin *gin.Engine
-	Db *db.StudentHandler
+	Db  *db.StudentHandler
 }
 
 func NewServer() *Api {
@@ -15,9 +17,12 @@ func NewServer() *Api {
 	database := db.Init()
 	studentDb := db.CreateStudentHandler(database)
 
+	//Swagger endpoint
+	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	return &Api{
 		Gin: server,
-		Db: studentDb,
+		Db:  studentDb,
 	}
 }
 
@@ -31,8 +36,8 @@ func (api *Api) ConfigureRoutes() {
 }
 
 func (api *Api) Start(port ...string) error {
-  	if len(port) > 0 {
-		return api.Gin.Run(":" + port[0])	
+	if len(port) > 0 {
+		return api.Gin.Run(":" + port[0])
 	}
 	return api.Gin.Run()
 }
