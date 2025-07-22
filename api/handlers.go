@@ -23,7 +23,9 @@ func (api *Api) getStudents(c *gin.Context) {
 		c.String(http.StatusNotFound, "Failed to get students...")
 	}
 
-	c.JSON(http.StatusOK, students)
+	listOfStudents := map[string][]schemas.StudentResponse{"students": schemas.FormatedResponse(students)}
+
+	c.JSON(http.StatusOK, listOfStudents)
 }
 
 func (api *Api) createStudent(c *gin.Context) {
