@@ -14,24 +14,23 @@ import (
 // @BasePath /api/v1
 
 // PingExample godoc
-// @Summary ping example
+// @Summary Ping example
 // @Schemes
-// @Description Faz uma requisição ping
-// @Tags example
+// @Description Faz uma requisição para health check da API
+// @Tags Ping
 // @Accept json
 // @Produce json
-// @Success 200 {object} map[string]string
+// @Success 200 {string} pong
 // @Router /ping [get]
 func ping(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"message": "pong",
-	})
+	c.String(http.StatusOK, "pong")
 }
 
 func (api *Api) getStudents(c *gin.Context) {
 	students, err := api.Db.GetStudents()
 	if err != nil {
-		c.String(http.StatusNotFound, "Failed to get students...")
+		NewErr(c, http.StatusInternalServerError, err)
+		return
 	}
 
 	activeParam := c.Query("active")
