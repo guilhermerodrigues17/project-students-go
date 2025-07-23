@@ -17,7 +17,7 @@ const docTemplate = `{
     "paths": {
         "/ping": {
             "get": {
-                "description": "Faz uma requisição ping",
+                "description": "Faz uma requisição para health check da API",
                 "consumes": [
                     "application/json"
                 ],
@@ -25,17 +25,14 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "example"
+                    "Ping"
                 ],
-                "summary": "ping example",
+                "summary": "Ping example",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "type": "string"
                         }
                     }
                 }

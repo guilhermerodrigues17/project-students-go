@@ -10,17 +10,15 @@ paths:
     get:
       consumes:
       - application/json
-      description: Faz uma requisição ping
+      description: Faz uma requisição para health check da API
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: ping example
+            type: string
+      summary: Ping example
       tags:
-      - example
+      - Ping
 swagger: "2.0"
