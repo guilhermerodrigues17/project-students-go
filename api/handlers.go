@@ -80,7 +80,7 @@ func (api *Api) createStudent(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
 
-	c.JSON(http.StatusCreated, "Create student")
+	c.JSON(http.StatusCreated, student)
 }
 
 func (api *Api) getStudent(c *gin.Context) {
