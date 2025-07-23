@@ -38,13 +38,13 @@ func (api *Api) getStudents(c *gin.Context) {
 		active, err := strconv.ParseBool(activeParam)
 		if err != nil {
 			log.Println(err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			NewErr(c, http.StatusInternalServerError, err)
 			return
 		}
 
 		students, err = api.Db.GetStudentsByActive(active)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			NewErr(c, http.StatusInternalServerError, err)
 			return
 		}
 	}
@@ -58,13 +58,13 @@ func (api *Api) createStudent(c *gin.Context) {
 	studentReq := StudentRequest{}
 
 	if err := c.Bind(&studentReq); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		NewErr(c, http.StatusInternalServerError, err)
 		return
 	}
 
 	if err := studentReq.Validate(); err != nil {
 		log.Println(err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		NewErr(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -77,7 +77,8 @@ func (api *Api) createStudent(c *gin.Context) {
 	}
 
 	if err := api.Db.AddStudent(student); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		NewErr(c, http.StatusInternalServerError, err)
+		return
 	}
 
 	c.JSON(http.StatusCreated, student)
@@ -86,18 +87,18 @@ func (api *Api) createStudent(c *gin.Context) {
 func (api *Api) getStudent(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.String(http.StatusInternalServerError, "An error occurred...")
+		NewErr(c, http.StatusInternalServerError, err)
 		return
 	}
 
 	student, err := api.Db.GetStudent(id)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		c.String(http.StatusNotFound, "Student not found")
+		NewErr(c, http.StatusNotFound, err)
 		return
 	}
 
 	if err != nil {
-		c.String(http.StatusInternalServerError, "An error occurred...")
+		NewErr(c, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -107,26 +108,26 @@ func (api *Api) getStudent(c *gin.Context) {
 func (api *Api) updateStudent(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.String(http.StatusInternalServerError, "An error occurred...")
+		NewErr(c, http.StatusInternalServerError, err)
 		return
 	}
 
 	updatingStudent, err := api.Db.GetStudent(id)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		c.String(http.StatusNotFound, "Student not found")
+		NewErr(c, http.StatusNotFound, err)
 		return
 	}
 
 	receivedStudent := schemas.Student{}
 	if err := c.Bind(&receivedStudent); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		NewErr(c, http.StatusInternalServerError, err)
 		return
 	}
 
 	updatedStudent := verifyUpdateFields(receivedStudent, updatingStudent)
 
 	if err := api.Db.UpdateStudent(updatedStudent); err != nil {
-		c.String(http.StatusInternalServerError, "An error occurred...")
+		NewErr(c, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -136,18 +137,18 @@ func (api *Api) updateStudent(c *gin.Context) {
 func (api *Api) deleteStudent(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.String(http.StatusInternalServerError, "An error occurred...")
+		NewErr(c, http.StatusInternalServerError, err)
 		return
 	}
 
 	student, err := api.Db.GetStudent(id)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		c.String(http.StatusNotFound, "Student not found")
+		NewErr(c, http.StatusNotFound, err)
 		return
 	}
 
 	if err := api.Db.DeleteStudent(student); err != nil {
-		c.String(http.StatusInternalServerError, "An error occurred...")
+		NewErr(c, http.StatusInternalServerError, err)
 		return
 	}
 
