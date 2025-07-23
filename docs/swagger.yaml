@@ -1,4 +1,26 @@
 basePath: /
+definitions:
+  schemas.StudentResponse:
+    properties:
+      active:
+        type: boolean
+      age:
+        type: integer
+      cpf:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updatedAt:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -21,4 +43,23 @@ paths:
       summary: Ping example
       tags:
       - Ping
+  /students:
+    get:
+      consumes:
+      - application/json
+      description: Busca os dados de todos os estudantes na API
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/schemas.StudentResponse'
+              type: array
+            type: object
+      summary: get all students
+      tags:
+      - Students
 swagger: "2.0"

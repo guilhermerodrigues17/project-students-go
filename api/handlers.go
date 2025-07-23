@@ -26,6 +26,15 @@ func ping(c *gin.Context) {
 	c.String(http.StatusOK, "pong")
 }
 
+// getStudents godoc
+// @Summary get all students
+// @Schemes
+// @Description Busca os dados de todos os estudantes na API
+// @Tags Students
+// @Accept json
+// @Produce json
+// @Success 200 {object} map[string][]schemas.StudentResponse
+// @Router /students [get]
 func (api *Api) getStudents(c *gin.Context) {
 	students, err := api.Db.GetStudents()
 	if err != nil {
